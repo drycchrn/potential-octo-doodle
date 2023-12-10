@@ -16,4 +16,4 @@ function countdown(time) {
   timer = setInterval(decreaseSeconds, 1000);
 }
 
-countdown(2);
+countdown(10);
