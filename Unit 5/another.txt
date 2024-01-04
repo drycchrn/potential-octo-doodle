@@ -1,0 +1,26 @@
+Part 1
+1. mkdir first
+2. cd first
+3. Windows OS: Notepad person.txt, iOS: touch person.txt
+4. mv .\person.txt another.txt
+5. cp .\another.txt copy.txt
+6. rm .\copy.txt
+7a. cd ..
+7b. cp first second
+8. rm second
+
+Part 2
+1a. man rm lists the manual for the command Remove-Item.
+1b. to get out, press Q.  
+2a. -l displays all items in current directory in a long list format
+2b. -a displays all items in the directory
+3. Windows OS: alt + left/right, iOS: option + left/right
+4. Windows OS: End, iOS: control + e
+5. Windows OS: Home, iOS: control + a 
+6. Windows OS: ctrl + w; iOS: control + w
+7. Terminal is a wrapper program that runs the shell. Shell is the program that processes commands and returns the output.
+8. Absolute path is the path starting from the root directory, and it is the full path to the file/directory.
+9. Relative path is the path relative to the current directory. 
+10a. Flags alters commands with the use of - and a lower or uppercase letter after the commamnd.
+10b. -l (2a), -a (2b), -r (reverses the order of items in current directory)
+11. With the rm command, -r does is recurive removal -f does
