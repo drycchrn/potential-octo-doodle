@@ -1,0 +1,5 @@
+- git branch branch_name or git checkout -b branch_name
+- Recursive (git merge) takes commits from the main branch and merges them into your branch. Fast forward (git rebase) merges commits from your branch to the lastest commit on the main branch.
+- git checkout branch_name
+- git branch -d branch_name
+- Merge conflicts are when changes are commits to the same file from different branches. 
