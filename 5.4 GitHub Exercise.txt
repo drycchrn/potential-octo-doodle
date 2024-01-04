@@ -1,7 +1,0 @@
-git checkout -b GitHub_Exercise
-git add .
-git commit -m "5.4 - GitHub Exercise"
-git checkout main
-git merge GitHub_Exercise
-git push
-git branch -d GitHub_Exercise
