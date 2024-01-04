@@ -1,0 +1,15 @@
+1. md learn_git_again
+2. cd learn_git_again
+3. Windows OS: Notepad third.txt, iOS: touch third.txt
+4. git init
+5. git add third.txt
+6. git commit -m adding third.txt
+7. git log
+8. Windows OS: Notepad fourth.txt, iOS: touch fourth.txt
+9. git add fourth.txt
+10. git commit -m adding fourth.txt
+11. git rm third.txt
+12-13. git commit -m removing third.txt
+14. git log
+15. git config --global core.pager "cat"
+16. git config --global --list
