@@ -1,0 +1,44 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  background-color: whitesmoke;
+}
+
+h1 {
+  font-size: 40px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+h2 {
+  font-size: 30px;
+  text-transform: uppercase;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.todo {
+  font-size: 20px;
+}
+
+.todo:hover {
+  background-color: rgb(0, 0, 0, 0.1);
+  transition: all 100ms;
+}
+
+.removeTodo {
+  border: none;
+  background: transparent;
+}
+
+.completedTodo {
+  color: gray;
+  text-decoration: line-through;
+  font-style: italic;
+}
+
+input[type="checkbox"]:checked {
+  accent-color: gray;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>JS Todos Exercise</title>
+    <link rel="stylesheet" href="app.css" />
+    <script src="app.js"></script>
+  </head>
+
+  <body onload="loadLocalStorage()">
+    <h1>JS Todo Exercise</h1>
+    <h2>My Todo List</h2>
+
+    <ul id="todoList"></ul>
+
+    <form id="addTodoForm">
+      <input type="text" id="newTodo" placeholder="Enter To Do" required />
+      <input
+        type="submit"
+        id="addTodo"
+        value="Add Todo ✍️"
+        onclick="return getTodoInputAndAddTodoToList()"
+      />
+    </form>
+  </body>
+</html>
