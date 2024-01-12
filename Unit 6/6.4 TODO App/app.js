@@ -79,21 +79,21 @@ function getIdNum() {
 }
 
 function addTodoToList(numOfTodo, todoText, todoStatus) {
-  if (todoText.length > 3) {
-    const ul = document.getElementById("todoList");
-    var createdTodo = createTodo(numOfTodo, todoText, todoStatus);
-    ul.append(createdTodo);
-  } else {
-    alert("Please input more text.");
-  }
+  const ul = document.getElementById("todoList");
+  var createdTodo = createTodo(numOfTodo, todoText, todoStatus);
+  ul.append(createdTodo);
 }
 
 function getTodoInputAndAddTodoToList(event) {
-  var numOfTodo = getIdNum();
   var todoText = document.getElementById("newTodo").value;
-  document.getElementById("newTodo").value = "";
-  addTodoToList(numOfTodo, todoText);
-  addTodoToLocalStorage(numOfTodo, todoText);
+  if (todoText.length < 3) {
+    alert("Please input more text.");
+  } else {
+    var numOfTodo = getIdNum();
+    document.getElementById("newTodo").value = "";
+    addTodoToList(numOfTodo, todoText, false);
+    addTodoToLocalStorage(numOfTodo, todoText);
+  }
 
   return false;
 }
