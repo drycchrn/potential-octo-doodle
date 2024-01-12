@@ -98,44 +98,41 @@ function getTodoInputAndAddTodoToList(event) {
   return false;
 }
 
-function getLiElementForEvents(event) {
-  var checkbox = event.target;
-  var checkboxElementId = checkbox.id;
-  var numOfTodo = checkboxElementId.split("-")[1];
-  var liElement = document.getElementById("todo-" + numOfTodo);
-
-  return liElement;
-}
-
 function toggleTodo(event) {
-  var liElement = getLiElementForEvents(event);
+  var checkbox = event.target;
+  var id = checkbox.id;
+  var numOfTodo = id.split("-")[1];
+  var todo = document.getElementById("todo-" + numOfTodo);
 
   if (checkbox.checked) {
-    liElement.classList.add("completedTodo");
+    todo.classList.add("completedTodo");
+    completedInLocalStorage(numOfTodo);
   } else {
-    liElement.classList.remove("completedTodo");
+    todo.classList.remove("completedTodo");
+    incompleteInLocalStorage(numOfTodo);
   }
-
-  updateLocalStorageWithCheckboxStateForId(numOfTodo, checkbox.checked);
 }
 
 function removeTodo(event) {
-  var liElement = getLiElementForEvents(event);
+  var trashcan = event.target;
+  var id = trashcan.id;
+  var numOfTodo = id.split("-")[1];
+  var todo = document.getElementById("todo-" + numOfTodo);
 
-  liElement.remove();
-  removeTodoFromLocalStorage(numOfTodo);
+  todo.remove();
+  remTodoFromLocalStorage(numOfTodo);
 }
 
-function removeTodoFromLocalStorage(numOfTodo) {
+function remTodoFromLocalStorage(numOfTodo) {
   localStorage.removeItem("data-" + numOfTodo);
 }
 
 function loadLocalStorage() {
   const loadList = { ...localStorage };
-  var sortedLocalStorageKeys = Object.keys(loadList).sort();
-  for (var dataId of sortedLocalStorageKeys) {
+  var dataIds = Object.keys(loadList).sort();
+  for (var dataId of dataIds) {
     var data = JSON.parse(loadList[dataId]);
-    addTodoToList(data.id, data.text, data.checkStatus);
+    addTodoToList(data.id, data.text, data.check);
   }
 }
 
@@ -143,15 +140,22 @@ function addTodoToLocalStorage(numOfTodo, todoText) {
   var data = {
     id: numOfTodo,
     text: todoText,
-    checkStatus: false,
+    check: false,
   };
 
   localStorage.setItem("data-" + numOfTodo, JSON.stringify(data));
 }
 
-function updateLocalStorageWithCheckboxStateForId(numOfTodo, todoStatus) {
+function completedInLocalStorage(numOfTodo) {
   var localStorageId = "data-" + numOfTodo;
   var numOfCheck = JSON.parse(localStorage.getItem(localStorageId));
-  numOfCheck.checkStatus = todoStatus;
+  numOfCheck.check = true;
+  localStorage.setItem(localStorageId, JSON.stringify(numOfCheck));
+}
+
+function incompleteInLocalStorage(numOfTodo) {
+  var localStorageId = "data-" + numOfTodo;
+  var numOfCheck = JSON.parse(localStorage.getItem(localStorageId));
+  numOfCheck.check = false;
   localStorage.setItem(localStorageId, JSON.stringify(numOfCheck));
 }
