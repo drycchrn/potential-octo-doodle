@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Project: Hatchways Meme Generator</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+  </head>
+
+  <body onload="loadLocalStorage()">
+    <h1>Meme Generator</h1>
+
+    <form id="createMemeForm">
+      <input type="text" id="topTextInput" placeholder="Top Text" required />
+      <input
+        type="text"
+        id="bottomTextInput"
+        placeholder="Bottom Text"
+        required
+      />
+      <input type="text" id="imageUrlInput" placeholder="Image URL" required />
+      <input
+        type="button"
+        id="submitButton"
+        value="Create Meme"
+        onsubmit="addNewMemeToCreatedMemes()"
+      />
+    </form>
+    <div id="createdMemes"></div>
+  </body>
+</html>
