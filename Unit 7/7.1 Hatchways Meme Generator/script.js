@@ -1,37 +1,109 @@
-function loadMemesFromLocalStorage() {
-  const loadMemes = { ...localStorage };
-}
-
-function addMemeToLocalStorage() {
-  const memeLocalStorageData = {
-    id: numOfMeme,
-    topText,
-    bottomText,
-    imageURL,
-  };
-
-  localStorage.setItem(
-    `meme-${numOfMeme}`,
-    JSON.stringify(memeLocalStorageData)
-  );
-}
-
-function removeMemeFromLocalStorage() {
-  localStorage.removeItem(`meme-${numOfMeme}`);
-}
-
 function createEmptyDiv() {
-  const newDivElement = document.createElement('div');
-  newDivElement.setAttribute('id', `meme-${numOfMeme}`);
+  const emptyDivElement = document.createElement('div');
+  return emptyDivElement;
+}
 
-  return newDivElement;
+function deleteMemeFromLocalStorage(idNum) {
+  localStorage.removeItem(`memeInLocalStorage-${idNum}`);
+}
+
+function deleteMeme(event) {
+  const deleteButton = event.target.id;
+  const numOfMemeBeingDeleted = Number(deleteButton.split('-')[1]);
+  const memeOnPage = document.getElementById(`meme-${numOfMemeBeingDeleted}`);
+
+  memeOnPage.remove();
+  deleteMemeFromLocalStorage(numOfMemeBeingDeleted);
+}
+
+function createDeleteButton(idNum) {
+  const newDeleteButton = document.createElement('button');
+
+  newDeleteButton.setAttribute('type', 'submit');
+  newDeleteButton.setAttribute('title', 'Delete Meme');
+  newDeleteButton.setAttribute('id', `delete-${idNum}`);
+  newDeleteButton.innerHTML = '🗑️';
+  newDeleteButton.classList.add('.deleteButton');
+  newDeleteButton.addEventListener('click', deleteMeme);
+
+  return newDeleteButton;
+}
+
+function createBottomTextDivWith(bottomTextInput) {
+  const bottomTextDiv = createEmptyDiv();
+
+  bottomTextDiv.innerHTML = bottomTextInput;
+  bottomTextDiv.classList.add('memeTextFormat', 'bottomTextPosition');
+
+  return bottomTextDiv;
+}
+
+function createImageDivWith(imageUrlInput) {
+  const imageDiv = createEmptyDiv();
+  const createImageElement = document.createElement('img');
+
+  createImageElement.setAttribute('src', imageUrlInput);
+  createImageElement.classList.add('imagePosition');
+  imageDiv.appendChild(createImageElement);
+
+  return imageDiv;
+}
+
+function createTopTextDivWith(topTextInput) {
+  const topTextDiv = createEmptyDiv();
+
+  topTextDiv.innerHTML = topTextInput;
+  topTextDiv.classList.add('memeTextFormat', 'topTextPosition');
+
+  return topTextDiv;
+}
+
+function combineAllInputsIntoDiv(
+  idNum,
+  topTextInput,
+  imageUrlInput,
+  bottomTextInput
+) {
+  const memeDiv = createEmptyDiv();
+
+  const topTextDiv = createTopTextDivWith(topTextInput);
+  const imageDiv = createImageDivWith(imageUrlInput);
+  const bottomTextDiv = createBottomTextDivWith(bottomTextInput);
+  const deleteButton = createDeleteButton(idNum);
+
+  memeDiv.append(topTextDiv);
+  memeDiv.append(imageDiv);
+  memeDiv.append(bottomTextDiv);
+  memeDiv.setAttribute('id', `meme-${idNum}`);
+  memeDiv.classList.add('memeOutline');
+  memeDiv.append(deleteButton);
+
+  return memeDiv;
+}
+
+function getUrlEndOf(imageUrlInput) {
+  const endOfUrlInput = imageUrlInput.slice(-4);
+  return endOfUrlInput[1];
+}
+
+function validateUrlEndingOf(imageUrlInput) {
+  const endOfUrl = getUrlEndOf(imageUrlInput);
+  const jpegConfirm = endOfUrl.includes('jpeg');
+  const jpgConfirm = endOfUrl.includes('jpg');
+  const pngConfirm = endOfUrl.includes('png');
+
+  if (jpegConfirm || jpgConfirm || pngConfirm) {
+    return true;
+  }
+
+  return false;
 }
 
 function retrieveTopTextAndClearInput() {
-  const topTextInput = document.getElementById('topTextInput').value;
+  const topText = document.getElementById('topTextInput').value;
   document.getElementById('topTextInput').value = '';
 
-  return topTextInput;
+  return topText;
 }
 
 function retrieveImageUrlAndClearInput() {
@@ -48,96 +120,81 @@ function retrieveBottomTextAndClearInput() {
   return bottomText;
 }
 
-confirmFileType(imageUrlInput, fileType) {
-  return imageUrlInput;
+function getNextIdNum() {
+  const currentNumOfMemes = document.getElementById('createdMemes').children;
+  let highestNum = 0;
+
+  currentNumOfMemes.forEach((meme) => {
+    const memeId = meme.getAttribute('id');
+    const getMemeIdNum = memeId.split('-')[1];
+    const memeIdNumAsStringToNum = Number(getMemeIdNum);
+
+    if (memeIdNumAsStringToNum > highestNum) {
+      highestNum = currentNumOfMemes;
+    }
+  });
+
+  return highestNum + 1;
 }
 
-function validateUrlInput(imageUrlInput) {
-  const jpegConfirm = confirmFileType(imageUrlInput, "jpeg");
-  const jpgConfirm = confirmFileType(imageUrlInput, "jpg");
-  const pngConfirm = confirmFileType(imageUrlInput, "png");
+function addMemeToPage(idNum, topText, imageUrl, bottomText) {
+  const validateUrl = validateUrlEndingOf(imageUrl);
 
-  const alert = 'Please provide an image in jpg, jpeg, or png format.';
-  if ((jpegConfirm || jpgConfirm || pngConfirm) = false) {
-    alert(alert);
+  if (validateUrl) {
+    const newMeme = combineAllInputsIntoDiv(
+      idNum,
+      topText,
+      imageUrl,
+      bottomText
+    );
+    const createdMemes = document.getElementById('createdMemes');
+    createdMemes.appendChild(newMeme);
+  } else {
+    const alert = 'Please provide an image in jpg, jpeg, or png format.';
+    alert();
   }
+
+  const newMeme = combineAllInputsIntoDiv(idNum, topText, imageUrl, bottomText);
+  const createdMemes = document.getElementById('createdMemes');
+  createdMemes.appendChild(newMeme);
 }
 
+function addMemeToLocalStorage(idNum, topText, bottomText, imageUrl) {
+  const memeLocalStorageData = {
+    id: idNum,
+    top: topText,
+    bottom: bottomText,
+    image: imageUrl,
+  };
 
-function allMemesCreatedDiv() {
-  const allMemesCreated = createEmptyDiv();
-  allMemesCreated.setAttribute('id', 'allMemesCreated');
-
-  return allMemesCreated;
+  localStorage.setItem(
+    `memeInLocalStorage-${idNum}`,
+    JSON.stringify(memeLocalStorageData)
+  );
 }
 
-function createTopTextDiv() {
-  const topTextDiv = createEmptyDiv();
+function submitMeme() {
   const topText = retrieveTopTextAndClearInput();
-
-  topTextDiv.setAttribute('id', `topText-${numOfMeme}`);
-  topTextDiv.innerHTML = topText;
-
-  return topTextDiv;
-}
-
-function createImageDiv() {
-  const imageDiv = createEmptyDiv();
-  const createImageElement = document.createElement('img');
-
-  createImageElement.setAttribute('src', retrieveImageUrlAndClearInput);
-  imageDiv.appendChild(createImageElement);
-
-  return imageDiv;
-}
-
-function createBottomTextDiv() {
-  const bottomTextDiv = createEmptyDiv();
+  const imageUrl = retrieveImageUrlAndClearInput();
   const bottomText = retrieveBottomTextAndClearInput();
+  const idNum = getNextIdNum();
 
-  bottomTextDiv.setAttribute('id', 'bottomTextDiv');
-  bottomTextDiv.innerHTML = bottomText;
-
-  return bottomTextDiv;
+  addMemeToPage(idNum, topText, imageUrl, bottomText);
+  addMemeToLocalStorage(idNum, topText, imageUrl, bottomText);
 }
 
-function deleteMeme() {
-  const placeholder = document.getElementById('placeholder');
+function loadMemesFromLocalStorage() {
+  const loadMemes = { ...localStorage };
+  const dataIds = Object.keys(loadMemes);
 
-  placeholder.remove();
-  removeMemeFromLocalStorage();
+  dataIds.forEach((dataId) => {
+    const data = JSON.parse(loadMemes[dataId]);
+    addMemeToPage(data.idNum, data.topText, data.imageUrl, data.bottomText);
+  });
 }
 
-function createDeleteButton() {
-  const newDeleteButton = document.createElement('button');
-
-  newDeleteButton.setAttribute('type', 'submit');
-  newDeleteButton.setAttribute('title', 'Delete Meme');
-  newDeleteButton.innerHTML = '🗑️';
-  newDeleteButton.addEventListener('click', deleteMeme);
-
-  return newDeleteButton;
-}
-
-function combineAllInputsIntoDiv() {
-  const memeDiv = createEmptyDiv();
-
-  const topTextDiv = createTopTextDiv();
-  const imageDiv = createImageDiv();
-  const bottomText = createBottomTextDiv();
-  const deleteButton = createDeleteButton();
-
-  memeDiv.append(topTextDiv);
-  memeDiv.append(imageDiv);
-  memeDiv.append(bottomText);
-  memeDiv.append(deleteButton);
-  memeDiv.classList.add('.CSSPLACEHOLDER');
-
-  return memeDiv;
-}
-
-function addNewMemeToCreatedMemes() {
-  const newMeme = combineAllInputsIntoDiv();
-  const allMemesCreated = allMemesCreatedDiv();
-  allMemesCreated.appendChild(newMeme);
+function onload() {
+  loadMemesFromLocalStorage();
+  const form = document.getElementById('createMemeForm');
+  form.addEventListener('submit', submitMeme);
 }
