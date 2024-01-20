@@ -1,0 +1,52 @@
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: #fcfbf4;
+}
+
+h1 {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-align: center;
+}
+
+form {
+  text-align: center;
+}
+
+img {
+  object-fit: scale-down;
+  max-width: 300px;
+  max-height: 400px;
+}
+
+.memeTextFormat {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: whitesmoke;
+  -webkit-text-stroke: 0.75px black;
+  text-align: center;
+}
+
+.topTextPosition {
+  position: absolute;
+  top: 0;
+  padding-top: 2px;
+}
+
+.bottomTextPosition {
+  position: absolute;
+  bottom: 0;
+  padding-bottom: 2px;
+}
+
+.imagePosition {
+  position: relative;
+}
+
+.memeOutline {
+  outline: 1.5px solid black;
+}
+
+.deleteButton {
+  border: none;
+  background: transparent;
+  align-items: center;
+}
