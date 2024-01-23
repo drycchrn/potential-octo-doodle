@@ -20,33 +20,29 @@ img {
 
 .memeTextFormat {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  color: whitesmoke;
+  color: red;
   -webkit-text-stroke: 0.75px black;
   text-align: center;
+  align-items: center;
 }
 
 .topTextPosition {
   position: absolute;
-  top: 0;
-  padding-top: 2px;
+  width: 100%;
+  top: 10px;
 }
 
 .bottomTextPosition {
   position: absolute;
-  bottom: 0;
-  padding-bottom: 2px;
+  width: 100%;
+  bottom: 10px;
 }
 
-.imagePosition {
+.memeDiv {
   position: relative;
-}
-
-.memeOutline {
-  outline: 1.5px solid black;
 }
 
 .deleteButton {
   border: none;
   background: transparent;
-  align-items: center;
 }
