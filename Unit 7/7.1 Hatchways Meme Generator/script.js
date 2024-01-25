@@ -74,7 +74,7 @@ function combineAllInputsIntoDiv(
   memeDiv.append(topTextDiv);
   memeDiv.append(imageDiv);
   memeDiv.append(bottomTextDiv);
-  memeDiv.classList.add('memeDiv');
+  memeDiv.classList.add('memeChildDiv');
 
   memeAndButtonDiv.append(memeDiv);
   memeAndButtonDiv.append(deleteButton);
@@ -125,17 +125,13 @@ function retrieveBottomTextAndClearInput() {
 
 function getNextIdNum() {
   const loadLocalStorage = { ...localStorage };
-  const sortedLocalStorage = Object.keys(loadLocalStorage).sort();
-  const lastMemePosition = Number(sortedLocalStorage.length);
+  const localStorageKeys = Object.keys(loadLocalStorage);
   let highestNum = 0;
 
-  if (lastMemePosition !== 0) {
-    const lastMeme = JSON.parse(loadLocalStorage[lastMemePosition]);
-    const lastMemeId = lastMeme.id;
-    const lastMemeIdNum = Number(lastMemeId.split('-')[1]);
-
-    if (lastMemeIdNum > highestNum) {
-      highestNum = lastMemeIdNum;
+  for (const key of localStorageKeys) {
+    const numOfKey = Number(key.split('-')[1]);
+    if (numOfKey > highestNum) {
+      highestNum = numOfKey;
     }
   }
 
@@ -186,14 +182,19 @@ function submitMeme() {
 
 function loadMemesFromLocalStorage() {
   const loadMemes = { ...localStorage };
-  const dataIds = Object.keys(loadMemes).sort();
+  const dataIds = Object.keys(loadMemes).sort(
+    (a, b) => Number(a.split('-')[1]) - Number(b.split('-')[1])
+  );
 
   for (const dataId of dataIds) {
     const data = JSON.parse(loadMemes[dataId]);
-    addMemeToPage(data.idNum, data.topText, data.imageUrl, data.bottomText);
+    addMemeToPage(data.id, data.top, data.image, data.bottom);
   }
 }
 
-function onload() {
+function loadPage() {
   loadMemesFromLocalStorage();
+
+  const form = document.getElementById('form');
+  form.addEventListener('submit', submitMeme, true);
 }
