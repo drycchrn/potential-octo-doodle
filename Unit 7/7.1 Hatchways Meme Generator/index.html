@@ -6,7 +6,7 @@
     <script type="text/javascript" src="script.js"></script>
   </head>
 
-  <body onload="onload()">
+  <body onload="loadPage()">
     <h1>Meme Generator</h1>
 
     <div id="form" class="form">
@@ -24,14 +24,10 @@
           placeholder="Image URL"
           required
         />
-        <input
-          type="submit"
-          onclick="return submitMeme(event)"
-          value="Create Meme"
-        />
+        <input type="submit" value="Create Meme" />
       </form>
     </div>
     <br />
-    <div id="createdMemes"></div>
+    <div id="createdMemes" class="memeParentDiv"></div>
   </body>
 </html>

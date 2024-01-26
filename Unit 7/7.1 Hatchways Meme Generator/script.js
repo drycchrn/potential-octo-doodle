@@ -150,9 +150,12 @@ function addMemeToPage(idNum, topText, imageUrl, bottomText) {
     );
     const createdMemes = document.getElementById('createdMemes');
     createdMemes.appendChild(newMeme);
+    return true;
   } else {
-    const alert = 'Please provide an image in jpg, jpeg, or png format.';
-    alert();
+    const alertText =
+      'Please provide an image in jpg, jpeg, or png format and try again.';
+    alert(alertText);
+    return false;
   }
 }
 
@@ -176,8 +179,10 @@ function submitMeme() {
   const bottomText = retrieveBottomTextAndClearInput();
   const idNum = getNextIdNum();
 
-  addMemeToPage(idNum, topText, imageUrl, bottomText);
-  addMemeToLocalStorage(idNum, topText, imageUrl, bottomText);
+  const result = addMemeToPage(idNum, topText, imageUrl, bottomText);
+  if (result) {
+    addMemeToLocalStorage(idNum, topText, imageUrl, bottomText);
+  }
 }
 
 function loadMemesFromLocalStorage() {
