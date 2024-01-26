@@ -1,16 +1,16 @@
-const gameContainer = document.getElementById("game");
+const gameContainer = document.getElementById('game');
 
-const COLORS = [
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "purple",
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "purple",
+const colors = [
+  'red',
+  'blue',
+  'green',
+  'orange',
+  'purple',
+  'red',
+  'blue',
+  'green',
+  'orange',
+  'purple',
 ];
 
 // here is a helper function to shuffle an array
@@ -36,32 +36,33 @@ function shuffle(array) {
   return array;
 }
 
-let shuffledColors = shuffle(COLORS);
+let shuffledColors = shuffle(colors);
 
 // this function loops over the array of colors
 // it creates a new div and gives it a class with the value of the color
 // it also adds an event listener for a click for each card
+
+// TODO: Implement this function!
+function handleCardClick(event) {
+  // you can use event.target to see which element was clicked
+  console.log('you just clicked', event.target);
+}
+
 function createDivsForColors(colorArray) {
   for (let color of colorArray) {
     // create a new div
-    const newDiv = document.createElement("div");
-
+    const newDiv = document.createElement('div');
+    newDiv.setAttribute('id', 'card');
     // give it a class attribute for the value we are looping over
     newDiv.classList.add(color);
-
     // call a function handleCardClick when a div is clicked on
-    newDiv.addEventListener("click", handleCardClick);
-
+    newDiv.addEventListener('click', handleCardClick);
     // append the div to the element with an id of game
     gameContainer.append(newDiv);
   }
 }
 
-// TODO: Implement this function!
-function handleCardClick(event) {
-  // you can use event.target to see which element was clicked
-  console.log("you just clicked", event.target);
-}
-
 // when the DOM loads
-createDivsForColors(shuffledColors);
+function loadPage() {
+  createDivsForColors(shuffledColors);
+}

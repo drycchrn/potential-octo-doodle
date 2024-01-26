@@ -6,17 +6,41 @@
     <link rel="stylesheet" href="style.css" />
   </head>
 
-  <body>
-    <h1>Memory Game!</h1>
+  <body onload="loadPage()">
+    <h1>Memory Game</h1>
+    <div class="scores">
+      <div>Current Score</div>
+      <div>Best Score</div>
+      <div id="currentScoreNum">0</div>
+      <div id="bestScoreNum">0</div>
+    </div>
+    <div class="gameControls">
+      <input
+        type="number"
+        id="pairInput"
+        title="Input number of pairs."
+        placeholder="Pairs"
+        min="2"
+        max="25"
+        class="pairInput"
+        required
+      />
+      <input
+        type="button"
+        id="startButton"
+        value="Start"
+        title="Start Game"
+        class="button"
+      />
+      <input
+        type="button"
+        id="restartButton"
+        value="Restart"
+        title="Restart Game"
+        class="button"
+      />
+    </div>
     <div id="game"></div>
   </body>
   <script src="script.js"></script>
 </html>
-
-<!--TODO: Start button
-TODO: Restart button after game ends
-TODO: Score keeper
-TODO: High Score
-TODO: Number of card increments (2)
-TODO: Random colors/images
--->
