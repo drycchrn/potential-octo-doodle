@@ -1,65 +1,60 @@
-function generateRandomColorsArray() {
+function generateRandomColors() {
   //const pairInput = document.getElementById('pairInput');
   //const numOfColorsNeeded = pairInput.value;
   const numOfColorsNeeded = 5;
-  const alphaAndNum = '0123456789ABCDEF';
+  const letterAndNum = '0123456789ABCDEF';
   let color = '#';
-  const randomColors = [];
+  const randomColorArray = [];
 
   for (let i = 0; i < numOfColorsNeeded; i++) {
     for (let j = 0; j < 6; j++) {
-      color += alphaAndNum[Math.floor(Math.random() * 16)];
+      color += letterAndNum[Math.floor(Math.random() * 16)];
     }
     for (let k = 0; k < 2; k++) {
-      randomColors.push(color);
+      randomColorArray.push(color);
     }
     color = '#';
   }
 
-  return randomColors;
+  return randomColorArray;
 }
 
-function shuffle(array) {
-  let counter = array.length;
+function shuffle(randomColors) {
+  let counter = randomColors.length;
 
   while (counter > 0) {
     const index = Math.floor(Math.random() * counter);
 
     counter--;
 
-    const temp = array[counter];
-    array[counter] = array[index];
-    array[index] = temp;
+    const temp = randomColors[counter];
+    randomColors[counter] = randomColors[index];
+    randomColors[index] = temp;
   }
 
-  return array;
-}
-
-function shuffledColors() {
-  const randomColors = generateRandomColorsArray();
-  shuffle(randomColors);
   return randomColors;
 }
 
-// this function loops over the array of colors
-// it creates a new div and gives it a class with the value of the color
-// it also adds an event listener for a click for each card
+function shuffledRandomColors() {
+  const randomColors = generateRandomColors();
+  shuffle(randomColors);
 
-// TODO: Implement this function!
+  return randomColors;
+}
 
-function createDivsFor(randomColorArray) {
+// TODO: game logic
+
+function createCardDivsWith(randomColors) {
   const gameContainer = document.getElementById('game');
 
-  for (let color of randomColorArray) {
-    // create a new div
-    const newDiv = document.createElement('div');
-    newDiv.setAttribute('style', 'background-color:' + color);
-    // give it a class attribute for the value we are looping over
-    // newDiv.classList.add(color);
-    // call a function handleCardClick when a div is clicked on
-    newDiv.addEventListener('click', handleCardClick);
-    // append the div to the element with an id of game
-    gameContainer.append(newDiv);
+  for (let color of randomColors) {
+    const newCard = document.createElement('div');
+
+    newCard.setAttribute('value', color);
+    newCard.addEventListener('click', handleCardClick);
+    newCard.classList.add('card');
+
+    gameContainer.append(newCard);
   }
 }
 
@@ -77,9 +72,15 @@ function currentScoreCounter() {
 function handleCardClick(event) {
   // you can use event.target to see which element was clicked
   const cardClicked = event.target;
+  const cardColor = cardClicked.getAttribute('value');
+
   if (cardClicked) {
-    console.log('you just clicked', cardClicked);
     currentScoreCounter();
+    console.log('you just clicked', cardClicked);
+
+    cardClicked.classList.remove('card');
+
+    cardClicked.setAttribute('style', `background-color:${cardColor}`);
   }
 }
 
@@ -100,6 +101,12 @@ function compareCurrentAndBestScore() {
   }
 }
 
+function setUpCurrentScoreInLocalStorage() {
+  const currentScoreNumDiv = document.getElementById('currentScoreNum');
+  currentScoreNumDiv.innerHTML = 0;
+  localStorage.setItem('gameScore', 0);
+}
+
 function loadBestScoreFromLocalStorage() {
   let bestScoreInLocalStorage = localStorage.getItem('bestScore');
   if (!bestScoreInLocalStorage) {
@@ -111,19 +118,14 @@ function loadBestScoreFromLocalStorage() {
   bestScoreNumDiv.innerHTML = bestScoreInLocalStorage;
 }
 
-function setUpCurrentScoreInLocalStorage() {
-  const currentScoreNumDiv = document.getElementById('currentScoreNum');
-  currentScoreNumDiv.innerHTML = 0;
-  localStorage.setItem('gameScore', 0);
-}
-
 function loadPage() {
-  const randomColors = shuffledColors();
-  createDivsFor(randomColors);
-  loadBestScoreFromLocalStorage();
+  const randomColors = shuffledRandomColors();
+  createCardDivsWith(randomColors);
+
   setUpCurrentScoreInLocalStorage();
+  loadBestScoreFromLocalStorage();
 }
 
-/*on click add class
+/*
 if card doesn't equal card, remove class otherwise keep class and don't allow second click
 */
