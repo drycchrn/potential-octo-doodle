@@ -82,74 +82,70 @@ function removeSecondCardIdentifiersFromLocalStorage() {
 }
 
 function cardFlip(event) {
-  const cardClicked = event.target;
-  const pickedCardColor = cardClicked.getAttribute('value');
-  const pickedCardId = cardClicked.getAttribute('id');
+  const cardsRemaining = document.querySelectorAll('div.card').length;
 
-  const firstCardColor = localStorage.getItem('firstCardClickedColor');
-  const firstCardId = localStorage.getItem('firstCardClickedId');
+  if (cardsRemaining !== 0) {
+    const cardClicked = event.target;
+    const pickedCardColor = cardClicked.getAttribute('value');
+    const pickedCardId = cardClicked.getAttribute('id');
 
-  let secondCardColor = localStorage.getItem('secondCardClickedColor');
-  let secondCardId = localStorage.getItem('secondCardClickedId');
+    const firstCardColor = localStorage.getItem('firstCardClickedColor');
+    const firstCardId = localStorage.getItem('firstCardClickedId');
 
-  if (cardClicked) {
-    currentScoreCounter();
-    console.log('you just clicked', cardClicked);
+    let secondCardColor = localStorage.getItem('secondCardClickedColor');
+    let secondCardId = localStorage.getItem('secondCardClickedId');
 
-    cardClicked.classList.remove('card');
+    if (cardClicked) {
+      currentScoreCounter();
+      console.log('you just clicked', cardClicked);
 
-    cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
-  }
+      cardClicked.classList.remove('card');
 
-  if (!(firstCardColor && firstCardId)) {
-    localStorage.setItem('firstCardClickedColor', pickedCardColor);
-    localStorage.setItem('firstCardClickedId', pickedCardId);
-  } else if (!(secondCardColor && secondCardId)) {
-    localStorage.setItem('secondCardClickedColor', pickedCardColor);
-    localStorage.setItem('secondCardClickedId', pickedCardId);
+      cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
+    }
 
-    secondCardColor = localStorage.getItem('secondCardClickedColor');
-    secondCardId = localStorage.getItem('secondCardClickedId');
+    if (!(firstCardColor && firstCardId)) {
+      localStorage.setItem('firstCardClickedColor', pickedCardColor);
+      localStorage.setItem('firstCardClickedId', pickedCardId);
+    } else if (!(secondCardColor && secondCardId)) {
+      localStorage.setItem('secondCardClickedColor', pickedCardColor);
+      localStorage.setItem('secondCardClickedId', pickedCardId);
 
-    if (firstCardColor && firstCardId && secondCardColor && secondCardId) {
-      if (secondCardId !== firstCardId) {
-        if (secondCardColor !== firstCardColor) {
-          const firstCardToReset = document.getElementById(firstCardId);
-          const seconrdCardToReset = document.getElementById(secondCardId);
+      secondCardColor = localStorage.getItem('secondCardClickedColor');
+      secondCardId = localStorage.getItem('secondCardClickedId');
 
-          setTimeout(() => {
-            firstCardToReset.removeAttribute('style');
-            seconrdCardToReset.removeAttribute('style');
-            firstCardToReset.classList.add('card');
-            seconrdCardToReset.classList.add('card');
-          }, 3000);
+      if (firstCardColor && firstCardId && secondCardColor && secondCardId) {
+        if (secondCardId !== firstCardId) {
+          if (secondCardColor !== firstCardColor) {
+            const firstCardToReset = document.getElementById(firstCardId);
+            const seconrdCardToReset = document.getElementById(secondCardId);
 
-          removeFirstCardIdentifiersFromLocalStorage();
-          removeSecondCardIdentifiersFromLocalStorage();
+            setTimeout(() => {
+              firstCardToReset.removeAttribute('style');
+              seconrdCardToReset.removeAttribute('style');
+              firstCardToReset.classList.add('card');
+              seconrdCardToReset.classList.add('card');
+            }, 3000);
+
+            removeFirstCardIdentifiersFromLocalStorage();
+            removeSecondCardIdentifiersFromLocalStorage();
+          } else {
+            removeFirstCardIdentifiersFromLocalStorage();
+            removeSecondCardIdentifiersFromLocalStorage();
+          }
         } else {
-          removeFirstCardIdentifiersFromLocalStorage();
+          const sameCardMessage = 'You cannot select the same card twice.';
+          alert(sameCardMessage);
           removeSecondCardIdentifiersFromLocalStorage();
+          return false;
         }
-      } else {
-        const sameCardMessage = 'You cannot select the same card twice.';
-        alert(sameCardMessage);
-        removeSecondCardIdentifiersFromLocalStorage();
-        return false;
       }
     }
+  } else {
+    const gameOverMessage = 'Game Over. Please play again.';
+    alert(gameOverMessage);
   }
 }
-
-/*
-
-const cards = document.querySelectorAll('div.card');
-const numOfCardsLeft = cards.length;
-if (numOfCardsLeft ===0) {
-  const gameOverMessage = 'Game Over. Please play again.';
-  alert (gameOverMessage);
-}
-
-*/
 
 function addBestScoreToLocalStorage() {
   const currentScore = currentScoreCounter();
