@@ -70,19 +70,21 @@ function currentScoreCounter() {
   localStorage.setItem('gameScore', currentScore);
   return currentScore;
 }
+function removeFirstCardIdentifiersFromLocalStorage() {
+  localStorage.removeItem('firstCardClickedColor');
+  localStorage.removeItem('firstCardClickedId');
+}
 
 function cardFlip(event) {
   const cardClicked = event.target;
-  const cardColor = cardClicked.getAttribute('value');
-  const cardId = cardClicked.getAttribute('id');
+  const pickedCardColor = cardClicked.getAttribute('value');
+  const pickedCardId = cardClicked.getAttribute('id');
 
   const firstCardColor = localStorage.getItem('firstCardClickedColor');
   const firstCardId = localStorage.getItem('firstCardClickedId');
 
   const firstCardToReset = document.getElementById(firstCardId);
-  const seconrdCardToReset = document.getElementById(cardId);
-
-  const timeOut = setTimeout(cardReset, 3000);
+  const seconrdCardToReset = document.getElementById(pickedCardId);
 
   if (cardClicked) {
     currentScoreCounter();
@@ -90,28 +92,49 @@ function cardFlip(event) {
 
     cardClicked.classList.remove('card');
 
-    cardClicked.setAttribute('style', `background-color:${cardColor}`);
+    cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
   }
 
   if (!(firstCardColor && firstCardId)) {
-    localStorage.setItem('firstCardClickedColor', cardColor);
-    localStorage.setItem('firstCardClickedId', cardId);
-  } else if (cardId !== firstCardId) {
-    if (cardColor !== firstCardColor) {
-      firstCardToReset.removeAttribute('style');
-      seconrdCardToReset.removeAttribute('style');
-      firstCardToReset.classList.add('card');
-      seconrdCardToReset.classList.add('card');
+    localStorage.setItem('firstCardClickedColor', pickedCardColor);
+    localStorage.setItem('firstCardClickedId', pickedCardId);
+  } else if (pickedCardId !== firstCardId) {
+    if (pickedCardColor !== firstCardColor) {
+      setTimeout(() => {
+        firstCardToReset.removeAttribute('style');
+        seconrdCardToReset.removeAttribute('style');
+        firstCardToReset.classList.add('card');
+        seconrdCardToReset.classList.add('card');
+      }, 5000);
+      removeFirstCardIdentifiersFromLocalStorage();
     }
+    removeFirstCardIdentifiersFromLocalStorage();
   }
 }
+
 /*
-function cardReset() {
-  const cardclicked = event.target;
-  const cardColor = cardClicked.getAttribute('value');
-  const cardNum = cardClicked.getAttribute('id');
-  cardClicked.removeAttribute('style');
-  cardClicked.classList.add('card');
+const cards = document.querySelectorAll('div.card');
+const numOfCardsLeft = cards.length;
+
+if(numOfCardsLeft !== 0) {
+  game ends
+} else {
+  const gameEndedMessage = 'The game is over. Please play again!'
+  alert(gameEndedMessage);
+}
+
+function cardReset(event) {
+  const cardClicked = event.target;
+  const cardId = cardClicked.getAttribute('id');
+  const firstCardId = localStorage.getItem('firstCardClickedId');
+
+  const firstCardToReset = document.getElementById(firstCardId);
+  const seconrdCardToReset = document.getElementById(cardId);
+
+  firstCardToReset.removeAttribute('style');
+  seconrdCardToReset.removeAttribute('style');
+  firstCardToReset.classList.add('card');
+  seconrdCardToReset.classList.add('card');
 }
 
 function gameLogic() {
