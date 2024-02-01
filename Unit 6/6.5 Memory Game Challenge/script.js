@@ -51,7 +51,7 @@ function createCardsWith(randomColors) {
 
     newCard.setAttribute('id', numOfCard);
     newCard.setAttribute('value', color);
-    newCard.addEventListener('click', cardFlip);
+    newCard.addEventListener('click', cardRemaining);
     newCard.classList.add('card');
 
     gameContainer.append(newCard);
@@ -71,6 +71,26 @@ function currentScoreCounter() {
   return currentScore;
 }
 
+function addBestScoreToLocalStorage() {
+  const currentScore = currentScoreCounter();
+  localStorage.removeItem('bestScore');
+  localStorage.setItem('bestScore', currentScore);
+}
+
+function compareCurrentAndBestScore() {
+  const currentScore = currentScoreCounter();
+  const bestScore = Number(localStorage.getItem('bestScore'));
+  const bestScoreNum = document.getElementById('bestScoreNum');
+
+  if (bestScore === 0) {
+    addBestScoreToLocalStorage();
+    bestScoreNum.innerHTML = currentScore;
+  } else if (bestScore > currentScore) {
+    addBestScoreToLocalStorage();
+    bestScoreNum.innerHTML = currentScore;
+  }
+}
+
 function removeFirstCardIdentifiersFromLocalStorage() {
   localStorage.removeItem('firstCardClickedColor');
   localStorage.removeItem('firstCardClickedId');
@@ -82,85 +102,74 @@ function removeSecondCardIdentifiersFromLocalStorage() {
 }
 
 function cardFlip(event) {
-  const cardsRemaining = document.querySelectorAll('div.card').length;
+  const cardClicked = event.target;
+  const pickedCardColor = cardClicked.getAttribute('value');
+  const pickedCardId = cardClicked.getAttribute('id');
 
-  if (cardsRemaining !== 0) {
-    const cardClicked = event.target;
-    const pickedCardColor = cardClicked.getAttribute('value');
-    const pickedCardId = cardClicked.getAttribute('id');
+  const firstCardColor = localStorage.getItem('firstCardClickedColor');
+  const firstCardId = localStorage.getItem('firstCardClickedId');
 
-    const firstCardColor = localStorage.getItem('firstCardClickedColor');
-    const firstCardId = localStorage.getItem('firstCardClickedId');
+  let secondCardColor = localStorage.getItem('secondCardClickedColor');
+  let secondCardId = localStorage.getItem('secondCardClickedId');
 
-    let secondCardColor = localStorage.getItem('secondCardClickedColor');
-    let secondCardId = localStorage.getItem('secondCardClickedId');
+  if (cardClicked) {
+    currentScoreCounter();
+    console.log('you just clicked', cardClicked);
 
-    if (cardClicked) {
-      currentScoreCounter();
-      console.log('you just clicked', cardClicked);
+    cardClicked.classList.remove('card');
 
-      cardClicked.classList.remove('card');
+    cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
+  }
 
-      cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
-    }
+  if (!(firstCardColor && firstCardId)) {
+    localStorage.setItem('firstCardClickedColor', pickedCardColor);
+    localStorage.setItem('firstCardClickedId', pickedCardId);
+  } else if (!(secondCardColor && secondCardId)) {
+    localStorage.setItem('secondCardClickedColor', pickedCardColor);
+    localStorage.setItem('secondCardClickedId', pickedCardId);
 
-    if (!(firstCardColor && firstCardId)) {
-      localStorage.setItem('firstCardClickedColor', pickedCardColor);
-      localStorage.setItem('firstCardClickedId', pickedCardId);
-    } else if (!(secondCardColor && secondCardId)) {
-      localStorage.setItem('secondCardClickedColor', pickedCardColor);
-      localStorage.setItem('secondCardClickedId', pickedCardId);
+    secondCardColor = localStorage.getItem('secondCardClickedColor');
+    secondCardId = localStorage.getItem('secondCardClickedId');
 
-      secondCardColor = localStorage.getItem('secondCardClickedColor');
-      secondCardId = localStorage.getItem('secondCardClickedId');
+    if (firstCardColor && firstCardId && secondCardColor && secondCardId) {
+      if (secondCardId !== firstCardId) {
+        if (secondCardColor !== firstCardColor) {
+          const firstCardToReset = document.getElementById(firstCardId);
+          const seconrdCardToReset = document.getElementById(secondCardId);
 
-      if (firstCardColor && firstCardId && secondCardColor && secondCardId) {
-        if (secondCardId !== firstCardId) {
-          if (secondCardColor !== firstCardColor) {
-            const firstCardToReset = document.getElementById(firstCardId);
-            const seconrdCardToReset = document.getElementById(secondCardId);
+          setTimeout(() => {
+            firstCardToReset.removeAttribute('style');
+            seconrdCardToReset.removeAttribute('style');
+            firstCardToReset.classList.add('card');
+            seconrdCardToReset.classList.add('card');
+          }, 3000);
 
-            setTimeout(() => {
-              firstCardToReset.removeAttribute('style');
-              seconrdCardToReset.removeAttribute('style');
-              firstCardToReset.classList.add('card');
-              seconrdCardToReset.classList.add('card');
-            }, 3000);
-
-            removeFirstCardIdentifiersFromLocalStorage();
-            removeSecondCardIdentifiersFromLocalStorage();
-          } else {
-            removeFirstCardIdentifiersFromLocalStorage();
-            removeSecondCardIdentifiersFromLocalStorage();
-          }
-        } else {
-          const sameCardMessage = 'You cannot select the same card twice.';
-          alert(sameCardMessage);
+          removeFirstCardIdentifiersFromLocalStorage();
           removeSecondCardIdentifiersFromLocalStorage();
-          return false;
+        } else {
+          removeFirstCardIdentifiersFromLocalStorage();
+          removeSecondCardIdentifiersFromLocalStorage();
         }
+      } else {
+        const sameCardMessage = 'You cannot select the same card twice.';
+        alert(sameCardMessage);
+        removeSecondCardIdentifiersFromLocalStorage();
+        return false;
       }
     }
-  } else {
-    const gameOverMessage = 'Game Over. Please play again.';
-    alert(gameOverMessage);
   }
 }
 
-function addBestScoreToLocalStorage() {
-  const currentScore = currentScoreCounter();
-  localStorage.removeItem('bestScore');
-  localStorage.setItem('bestScore', currentScore);
-}
+function cardRemaining() {
+  const cardsRemaining = document.querySelectorAll('div.card').length;
 
-function compareCurrentAndBestScore() {
-  const currentScore = currentScoreCounter();
-  const bestScore = Number(localStorage.getItem('bestScore'));
-
-  if (bestScore === 0) {
-    addBestScoreToLocalStorage();
-  } else if (bestScore > currentScore) {
-    addBestScoreToLocalStorage();
+  if (cardsRemaining !== 0) {
+    cardFlip(event);
+  } else {
+    const gameOverMessage = 'Game Over. Please play again.';
+    alert(gameOverMessage);
+    compareCurrentAndBestScore();
+    return false;
   }
 }
 
