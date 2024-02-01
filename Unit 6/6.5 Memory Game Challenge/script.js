@@ -70,9 +70,15 @@ function currentScoreCounter() {
   localStorage.setItem('gameScore', currentScore);
   return currentScore;
 }
+
 function removeFirstCardIdentifiersFromLocalStorage() {
   localStorage.removeItem('firstCardClickedColor');
   localStorage.removeItem('firstCardClickedId');
+}
+
+function removeSecondCardIdentifiersFromLocalStorage() {
+  localStorage.removeItem('secondCardClickedColor');
+  localStorage.removeItem('secondCardClickedId');
 }
 
 function cardFlip(event) {
@@ -83,8 +89,8 @@ function cardFlip(event) {
   const firstCardColor = localStorage.getItem('firstCardClickedColor');
   const firstCardId = localStorage.getItem('firstCardClickedId');
 
-  const firstCardToReset = document.getElementById(firstCardId);
-  const seconrdCardToReset = document.getElementById(pickedCardId);
+  let secondCardColor = localStorage.getItem('secondCardClickedColor');
+  let secondCardId = localStorage.getItem('secondCardClickedId');
 
   if (cardClicked) {
     currentScoreCounter();
@@ -98,70 +104,52 @@ function cardFlip(event) {
   if (!(firstCardColor && firstCardId)) {
     localStorage.setItem('firstCardClickedColor', pickedCardColor);
     localStorage.setItem('firstCardClickedId', pickedCardId);
-  } else if (pickedCardId !== firstCardId) {
-    if (pickedCardColor !== firstCardColor) {
-      setTimeout(() => {
-        firstCardToReset.removeAttribute('style');
-        seconrdCardToReset.removeAttribute('style');
-        firstCardToReset.classList.add('card');
-        seconrdCardToReset.classList.add('card');
-      }, 5000);
-      removeFirstCardIdentifiersFromLocalStorage();
+  } else if (!(secondCardColor && secondCardId)) {
+    localStorage.setItem('secondCardClickedColor', pickedCardColor);
+    localStorage.setItem('secondCardClickedId', pickedCardId);
+
+    secondCardColor = localStorage.getItem('secondCardClickedColor');
+    secondCardId = localStorage.getItem('secondCardClickedId');
+
+    if (firstCardColor && firstCardId && secondCardColor && secondCardId) {
+      if (secondCardId !== firstCardId) {
+        if (secondCardColor !== firstCardColor) {
+          const firstCardToReset = document.getElementById(firstCardId);
+          const seconrdCardToReset = document.getElementById(secondCardId);
+
+          setTimeout(() => {
+            firstCardToReset.removeAttribute('style');
+            seconrdCardToReset.removeAttribute('style');
+            firstCardToReset.classList.add('card');
+            seconrdCardToReset.classList.add('card');
+          }, 3000);
+
+          removeFirstCardIdentifiersFromLocalStorage();
+          removeSecondCardIdentifiersFromLocalStorage();
+        } else {
+          removeFirstCardIdentifiersFromLocalStorage();
+          removeSecondCardIdentifiersFromLocalStorage();
+        }
+      } else {
+        const sameCardMessage = 'You cannot select the same card twice.';
+        alert(sameCardMessage);
+        removeSecondCardIdentifiersFromLocalStorage();
+        return false;
+      }
     }
-    removeFirstCardIdentifiersFromLocalStorage();
   }
 }
 
 /*
+
 const cards = document.querySelectorAll('div.card');
 const numOfCardsLeft = cards.length;
-
-if(numOfCardsLeft !== 0) {
-  game ends
-} else {
-  const gameEndedMessage = 'The game is over. Please play again!'
-  alert(gameEndedMessage);
+if (numOfCardsLeft ===0) {
+  const gameOverMessage = 'Game Over. Please play again.';
+  alert (gameOverMessage);
 }
 
-function cardReset(event) {
-  const cardClicked = event.target;
-  const cardId = cardClicked.getAttribute('id');
-  const firstCardId = localStorage.getItem('firstCardClickedId');
-
-  const firstCardToReset = document.getElementById(firstCardId);
-  const seconrdCardToReset = document.getElementById(cardId);
-
-  firstCardToReset.removeAttribute('style');
-  seconrdCardToReset.removeAttribute('style');
-  firstCardToReset.classList.add('card');
-  seconrdCardToReset.classList.add('card');
-}
-
-function gameLogic() {
-
-
-
-  if (value !==value){
-  cardReset();
-  } else if (value===value && id === id) {
-  const message = 'Please select another card.';
-  alert(message);
-  cardReset();
-  } else {
-  const cardClicked = event.target;
-  cardClicked.removeEventListener('click', cardFlip, false);
-  }
-  //if value != value
-  //remove background-color and assign card class
-  //else if value===value && id === id
-  //alert you cannot select the same card twice please pick another card
-  //else remove event listener
-
-  //how to store the click? 
-
-}
 */
-// TODO: game logic
 
 function addBestScoreToLocalStorage() {
   const currentScore = currentScoreCounter();
@@ -214,6 +202,8 @@ function loadPage() {
   //restartGame();
   setUpCurrentScoreInLocalStorage();
   loadBestScoreFromLocalStorage();
+  removeFirstCardIdentifiersFromLocalStorage();
+  removeSecondCardIdentifiersFromLocalStorage();
 }
 
 /*
