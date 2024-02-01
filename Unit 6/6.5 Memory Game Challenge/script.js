@@ -42,19 +42,21 @@ function shuffledRandomColors() {
   return randomColors;
 }
 
-// TODO: game logic
-
-function createCardDivsWith(randomColors) {
+function createCardsWith(randomColors) {
   const gameContainer = document.getElementById('game');
+  let numOfCard = 1;
 
   for (let color of randomColors) {
     const newCard = document.createElement('div');
 
+    newCard.setAttribute('id', numOfCard);
     newCard.setAttribute('value', color);
-    newCard.addEventListener('click', handleCardClick);
+    newCard.addEventListener('click', cardFlip);
     newCard.classList.add('card');
 
     gameContainer.append(newCard);
+
+    numOfCard++;
   }
 }
 
@@ -69,10 +71,18 @@ function currentScoreCounter() {
   return currentScore;
 }
 
-function handleCardClick(event) {
-  // you can use event.target to see which element was clicked
+function cardFlip(event) {
   const cardClicked = event.target;
   const cardColor = cardClicked.getAttribute('value');
+  const cardId = cardClicked.getAttribute('id');
+
+  const firstCardColor = localStorage.getItem('firstCardClickedColor');
+  const firstCardId = localStorage.getItem('firstCardClickedId');
+
+  const firstCardToReset = document.getElementById(firstCardId);
+  const seconrdCardToReset = document.getElementById(cardId);
+
+  const timeOut = setTimeout(cardReset, 3000);
 
   if (cardClicked) {
     currentScoreCounter();
@@ -82,7 +92,53 @@ function handleCardClick(event) {
 
     cardClicked.setAttribute('style', `background-color:${cardColor}`);
   }
+
+  if (!(firstCardColor && firstCardId)) {
+    localStorage.setItem('firstCardClickedColor', cardColor);
+    localStorage.setItem('firstCardClickedId', cardId);
+  } else if (cardId !== firstCardId) {
+    if (cardColor !== firstCardColor) {
+      firstCardToReset.removeAttribute('style');
+      seconrdCardToReset.removeAttribute('style');
+      firstCardToReset.classList.add('card');
+      seconrdCardToReset.classList.add('card');
+    }
+  }
 }
+/*
+function cardReset() {
+  const cardclicked = event.target;
+  const cardColor = cardClicked.getAttribute('value');
+  const cardNum = cardClicked.getAttribute('id');
+  cardClicked.removeAttribute('style');
+  cardClicked.classList.add('card');
+}
+
+function gameLogic() {
+
+
+
+  if (value !==value){
+  cardReset();
+  } else if (value===value && id === id) {
+  const message = 'Please select another card.';
+  alert(message);
+  cardReset();
+  } else {
+  const cardClicked = event.target;
+  cardClicked.removeEventListener('click', cardFlip, false);
+  }
+  //if value != value
+  //remove background-color and assign card class
+  //else if value===value && id === id
+  //alert you cannot select the same card twice please pick another card
+  //else remove event listener
+
+  //how to store the click? 
+
+}
+*/
+// TODO: game logic
 
 function addBestScoreToLocalStorage() {
   const currentScore = currentScoreCounter();
@@ -117,11 +173,22 @@ function loadBestScoreFromLocalStorage() {
   const bestScoreNumDiv = document.getElementById('bestScoreNum');
   bestScoreNumDiv.innerHTML = bestScoreInLocalStorage;
 }
+/*
+function restartGame() {
+  const restartButton = document.getElementById('restartButton');
+  restartButton.addEventListener('click', createCardsWith);
+}
 
+function startGame() {
+  const startButton = document.getElementById('startButton');
+  startButton.addEventListener('click', createCardsWith);
+}
+*/
 function loadPage() {
   const randomColors = shuffledRandomColors();
-  createCardDivsWith(randomColors);
-
+  createCardsWith(randomColors);
+  //startGame();
+  //restartGame();
   setUpCurrentScoreInLocalStorage();
   loadBestScoreFromLocalStorage();
 }
