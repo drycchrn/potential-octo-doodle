@@ -51,7 +51,7 @@ function createCardsWith(randomColors) {
 
     newCard.setAttribute('id', numOfCard);
     newCard.setAttribute('value', color);
-    newCard.addEventListener('click', cardRemaining);
+    newCard.addEventListener('click', countCardsRemaining);
     newCard.classList.add('card');
 
     gameContainer.append(newCard);
@@ -60,7 +60,7 @@ function createCardsWith(randomColors) {
   }
 }
 
-function currentScoreCounter() {
+function incrementCurrentScore() {
   let currentScore = Number(localStorage.getItem('gameScore'));
   const currentScoreNumDiv = document.getElementById('currentScoreNum');
 
@@ -71,22 +71,28 @@ function currentScoreCounter() {
   return currentScore;
 }
 
-function addBestScoreToLocalStorage() {
-  const currentScore = currentScoreCounter();
-  localStorage.removeItem('bestScore');
-  localStorage.setItem('bestScore', currentScore);
+function decrementCurrentScore() {
+  let currentScore = Number(localStorage.getItem('gameScore'));
+  const currentScoreNumDiv = document.getElementById('currentScoreNum');
+
+  currentScore -= 1;
+  currentScoreNumDiv.innerHTML = currentScore;
+
+  localStorage.setItem('gameScore', currentScore);
+  return currentScore;
 }
 
-function compareCurrentAndBestScore() {
-  const currentScore = currentScoreCounter();
+function compareCurrentAndBestScoreAndAddToLocalStorage() {
+  const currentScore = incrementCurrentScore();
   const bestScore = Number(localStorage.getItem('bestScore'));
   const bestScoreNum = document.getElementById('bestScoreNum');
 
   if (bestScore === 0) {
-    addBestScoreToLocalStorage();
+    localStorage.setItem('bestScore', currentScore);
     bestScoreNum.innerHTML = currentScore;
   } else if (bestScore > currentScore) {
-    addBestScoreToLocalStorage();
+    localStorage.removeItem('bestScore');
+    localStorage.setItem('bestScore', currentScore);
     bestScoreNum.innerHTML = currentScore;
   }
 }
@@ -101,7 +107,7 @@ function removeSecondCardIdentifiersFromLocalStorage() {
   localStorage.removeItem('secondCardClickedId');
 }
 
-function cardFlip(event) {
+function flipCard(event) {
   const cardClicked = event.target;
   const pickedCardColor = cardClicked.getAttribute('value');
   const pickedCardId = cardClicked.getAttribute('id');
@@ -113,25 +119,25 @@ function cardFlip(event) {
   let secondCardId = localStorage.getItem('secondCardClickedId');
 
   if (cardClicked) {
-    currentScoreCounter();
-    console.log('you just clicked', cardClicked);
+    if (!(firstCardColor && firstCardId)) {
+      cardClicked.classList.remove('card');
+      cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
 
-    cardClicked.classList.remove('card');
+      localStorage.setItem('firstCardClickedColor', pickedCardColor);
+      localStorage.setItem('firstCardClickedId', pickedCardId);
+    } else if (!(secondCardColor && secondCardId)) {
+      cardClicked.classList.remove('card');
+      cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
 
-    cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
-  }
+      localStorage.setItem('secondCardClickedColor', pickedCardColor);
+      localStorage.setItem('secondCardClickedId', pickedCardId);
 
-  if (!(firstCardColor && firstCardId)) {
-    localStorage.setItem('firstCardClickedColor', pickedCardColor);
-    localStorage.setItem('firstCardClickedId', pickedCardId);
-  } else if (!(secondCardColor && secondCardId)) {
-    localStorage.setItem('secondCardClickedColor', pickedCardColor);
-    localStorage.setItem('secondCardClickedId', pickedCardId);
+      secondCardColor = localStorage.getItem('secondCardClickedColor');
+      secondCardId = localStorage.getItem('secondCardClickedId');
 
-    secondCardColor = localStorage.getItem('secondCardClickedColor');
-    secondCardId = localStorage.getItem('secondCardClickedId');
+      const firstCardDiv = document.getElementById(firstCardId);
+      const secondCardDiv = document.getElementById(secondCardId);
 
-    if (firstCardColor && firstCardId && secondCardColor && secondCardId) {
       if (secondCardId !== firstCardId) {
         if (secondCardColor !== firstCardColor) {
           const firstCardToReset = document.getElementById(firstCardId);
@@ -142,34 +148,44 @@ function cardFlip(event) {
             seconrdCardToReset.removeAttribute('style');
             firstCardToReset.classList.add('card');
             seconrdCardToReset.classList.add('card');
-          }, 3000);
-
-          removeFirstCardIdentifiersFromLocalStorage();
-          removeSecondCardIdentifiersFromLocalStorage();
+            removeFirstCardIdentifiersFromLocalStorage();
+            removeSecondCardIdentifiersFromLocalStorage();
+          }, 1000);
         } else {
           removeFirstCardIdentifiersFromLocalStorage();
           removeSecondCardIdentifiersFromLocalStorage();
+
+          firstCardDiv.removeEventListener('click', countCardsRemaining);
+          secondCardDiv.removeEventListener('click', countCardsRemaining);
         }
       } else {
         const sameCardMessage = 'You cannot select the same card twice.';
         alert(sameCardMessage);
+        decrementCurrentScore();
         removeSecondCardIdentifiersFromLocalStorage();
-        return false;
       }
+    } else {
+      const pleaseWaitMessage = 'Please wait before selecting another card.';
+      alert(pleaseWaitMessage);
+      decrementCurrentScore();
     }
   }
 }
 
-function cardRemaining() {
+function countCardsRemaining() {
   const cardsRemaining = document.querySelectorAll('div.card').length;
 
-  if (cardsRemaining !== 0) {
-    cardFlip(event);
+  if (cardsRemaining === 1) {
+    compareCurrentAndBestScoreAndAddToLocalStorage();
+    flipCard(event);
+
+    setTimeout(() => {
+      const gameOverMessage = 'Game Over. Please play again.';
+      alert(gameOverMessage);
+    }, 500);
   } else {
-    const gameOverMessage = 'Game Over. Please play again.';
-    alert(gameOverMessage);
-    compareCurrentAndBestScore();
-    return false;
+    incrementCurrentScore();
+    flipCard(event);
   }
 }
 
