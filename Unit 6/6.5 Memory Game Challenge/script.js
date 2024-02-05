@@ -1,66 +1,77 @@
-function generateRandomColors() {
-  //const pairInput = document.getElementById('pairInput');
-  //const numOfColorsNeeded = pairInput.value;
-  const numOfColorsNeeded = 5;
-  const letterAndNum = '0123456789ABCDEF';
+//code abbreviation (Iden = Identifiers)
+
+function generateRandomColorArrayWith(inputtedNumOfPairColorsNeeded) {
+  const hexCodeLettersAndNums = '0123456789ABCDEF';
   let color = '#';
   const randomColorArray = [];
 
-  for (let i = 0; i < numOfColorsNeeded; i++) {
+  for (let i = 0; i < inputtedNumOfPairColorsNeeded; i++) {
     for (let j = 0; j < 6; j++) {
-      color += letterAndNum[Math.floor(Math.random() * 16)];
+      color += hexCodeLettersAndNums[Math.floor(Math.random() * 16)];
     }
-    for (let k = 0; k < 2; k++) {
-      randomColorArray.push(color);
+
+    //to avoid having the same color in array twice
+    if (randomColorArray.includes(color) !== -1) {
+      for (let k = 0; k < 2; k++) {
+        randomColorArray.push(color);
+      }
     }
+
     color = '#';
   }
 
   return randomColorArray;
 }
 
-function shuffle(randomColors) {
-  let counter = randomColors.length;
+function helperFuncToShuffle(randomColorArray) {
+  let counter = randomColorArray.length;
 
   while (counter > 0) {
     const index = Math.floor(Math.random() * counter);
 
     counter--;
 
-    const temp = randomColors[counter];
-    randomColors[counter] = randomColors[index];
-    randomColors[index] = temp;
+    const temp = randomColorArray[counter];
+    randomColorArray[counter] = randomColorArray[index];
+    randomColorArray[index] = temp;
   }
 
-  return randomColors;
+  return randomColorArray;
 }
 
-function shuffledRandomColors() {
-  const randomColors = generateRandomColors();
-  shuffle(randomColors);
+function shuffleRandomColorArrayWith(inputtedNumOfPairColorsNeeded) {
+  const randomColorArray = generateRandomColorArrayWith(
+    inputtedNumOfPairColorsNeeded
+  );
+  helperFuncToShuffle(randomColorArray);
 
-  return randomColors;
+  return randomColorArray;
 }
 
-function createCardsWith(randomColors) {
-  const gameContainer = document.getElementById('game');
-  let numOfCard = 1;
+function createCardsWithColorsFrom(shuffledRandomColorArray) {
+  const gameContainerDiv = document.getElementById('game');
+  const numOfCardsGenerated =
+    gameContainerDiv.getElementsByTagName('div').length;
 
-  for (let color of randomColors) {
-    const newCard = document.createElement('div');
+  if (numOfCardsGenerated === 0) {
+    let idNumOfCard = 1;
 
-    newCard.setAttribute('id', numOfCard);
-    newCard.setAttribute('value', color);
-    newCard.addEventListener('click', countCardsRemaining);
-    newCard.classList.add('card');
+    for (let color of shuffledRandomColorArray) {
+      const newCardDiv = document.createElement('div');
 
-    gameContainer.append(newCard);
+      newCardDiv.setAttribute('id', idNumOfCard);
+      newCardDiv.setAttribute('value', color);
+      newCardDiv.addEventListener('click', countCardsRemaining);
+      newCardDiv.classList.add('card');
 
-    numOfCard++;
+      gameContainerDiv.append(newCardDiv);
+
+      idNumOfCard++;
+    }
   }
 }
 
-function incrementCurrentScore() {
+function increaseCurrentScore() {
   let currentScore = Number(localStorage.getItem('gameScore'));
   const currentScoreNumDiv = document.getElementById('currentScoreNum');
 
@@ -71,7 +82,8 @@ function incrementCurrentScore() {
   return currentScore;
 }
 
-function decrementCurrentScore() {
+//used to not penalize when same or more than one card is picked
+function decreaseCurrentScore() {
   let currentScore = Number(localStorage.getItem('gameScore'));
   const currentScoreNumDiv = document.getElementById('currentScoreNum');
 
@@ -83,7 +95,7 @@ function decrementCurrentScore() {
 }
 
 function compareCurrentAndBestScoreAndAddToLocalStorage() {
-  const currentScore = incrementCurrentScore();
+  const currentScore = increaseCurrentScore();
   const bestScore = Number(localStorage.getItem('bestScore'));
   const bestScoreNum = document.getElementById('bestScoreNum');
 
@@ -97,14 +109,76 @@ function compareCurrentAndBestScoreAndAddToLocalStorage() {
   }
 }
 
-function removeFirstCardIdentifiersFromLocalStorage() {
+function remove1stCardIdenFromLocalStorage() {
   localStorage.removeItem('firstCardClickedColor');
   localStorage.removeItem('firstCardClickedId');
 }
 
-function removeSecondCardIdentifiersFromLocalStorage() {
+function remove2ndCardIdenFromLocalStorage() {
   localStorage.removeItem('secondCardClickedColor');
   localStorage.removeItem('secondCardClickedId');
+}
+
+function removeCardIdenFromLocalStorageAndEventListenerOnMatch(
+  firstCardDiv,
+  secondCardDiv
+) {
+  remove1stCardIdenFromLocalStorage();
+  remove2ndCardIdenFromLocalStorage();
+
+  firstCardDiv.removeEventListener('click', countCardsRemaining);
+  secondCardDiv.removeEventListener('click', countCardsRemaining);
+}
+
+function resetCardColorsOf(firstCardToReset, seconrdCardToReset) {
+  firstCardToReset.removeAttribute('style');
+  seconrdCardToReset.removeAttribute('style');
+  firstCardToReset.classList.add('card');
+  seconrdCardToReset.classList.add('card');
+}
+
+function resetColorsAndRemoveIdenIfNotMatchedOf(firstCardId, secondCardId) {
+  const firstCardToReset = document.getElementById(firstCardId);
+  const secondCardToReset = document.getElementById(secondCardId);
+
+  setTimeout(() => {
+    resetCardColorsOf(firstCardToReset, secondCardToReset);
+    remove1stCardIdenFromLocalStorage();
+    remove2ndCardIdenFromLocalStorage();
+  }, 1000);
+}
+
+function alertWhenTheSameCardIsClicked() {
+  const sameCardMessage = 'You cannot select the same card twice.';
+  alert(sameCardMessage);
+  decreaseCurrentScore();
+  remove2ndCardIdenFromLocalStorage();
+}
+
+function alertWhenMoreThanOneCardIsClicked() {
+  const pleaseWaitMessage = 'Please wait before selecting another card.';
+  alert(pleaseWaitMessage);
+  decreaseCurrentScore();
+}
+
+function alertWhenGameIsOver() {
+  const gameOverMessage = 'All matches found! 🎉 \nPlease play again.';
+  alert(gameOverMessage);
+}
+
+function changeColorOf(cardClicked, pickedCardColor) {
+  cardClicked.classList.remove('card');
+  cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
+}
+
+function addToLocalStorage1stCardIdenOf(pickedCardColor, pickedCardId) {
+  localStorage.setItem('firstCardClickedColor', pickedCardColor);
+  localStorage.setItem('firstCardClickedId', pickedCardId);
+}
+
+function addToLocalStorage2ndCardIdenOf(pickedCardColor, pickedCardId) {
+  localStorage.setItem('secondCardClickedColor', pickedCardColor);
+  localStorage.setItem('secondCardClickedId', pickedCardId);
 }
 
 function flipCard(event) {
@@ -120,17 +194,11 @@ function flipCard(event) {
 
   if (cardClicked) {
     if (!(firstCardColor && firstCardId)) {
-      cardClicked.classList.remove('card');
-      cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
-
-      localStorage.setItem('firstCardClickedColor', pickedCardColor);
-      localStorage.setItem('firstCardClickedId', pickedCardId);
+      changeColorOf(cardClicked, pickedCardColor);
+      addToLocalStorage1stCardIdenOf(pickedCardColor, pickedCardId);
     } else if (!(secondCardColor && secondCardId)) {
-      cardClicked.classList.remove('card');
-      cardClicked.setAttribute('style', `background-color:${pickedCardColor}`);
-
-      localStorage.setItem('secondCardClickedColor', pickedCardColor);
-      localStorage.setItem('secondCardClickedId', pickedCardId);
+      changeColorOf(cardClicked, pickedCardColor);
+      addToLocalStorage2ndCardIdenOf(pickedCardColor, pickedCardId);
 
       secondCardColor = localStorage.getItem('secondCardClickedColor');
       secondCardId = localStorage.getItem('secondCardClickedId');
@@ -140,34 +208,18 @@ function flipCard(event) {
 
       if (secondCardId !== firstCardId) {
         if (secondCardColor !== firstCardColor) {
-          const firstCardToReset = document.getElementById(firstCardId);
-          const seconrdCardToReset = document.getElementById(secondCardId);
-
-          setTimeout(() => {
-            firstCardToReset.removeAttribute('style');
-            seconrdCardToReset.removeAttribute('style');
-            firstCardToReset.classList.add('card');
-            seconrdCardToReset.classList.add('card');
-            removeFirstCardIdentifiersFromLocalStorage();
-            removeSecondCardIdentifiersFromLocalStorage();
-          }, 1000);
+          resetColorsAndRemoveIdenIfNotMatchedOf(firstCardId, secondCardId);
         } else {
-          removeFirstCardIdentifiersFromLocalStorage();
-          removeSecondCardIdentifiersFromLocalStorage();
-
-          firstCardDiv.removeEventListener('click', countCardsRemaining);
-          secondCardDiv.removeEventListener('click', countCardsRemaining);
+          removeCardIdenFromLocalStorageAndEventListenerOnMatch(
+            firstCardDiv,
+            secondCardDiv
+          );
         }
       } else {
-        const sameCardMessage = 'You cannot select the same card twice.';
-        alert(sameCardMessage);
-        decrementCurrentScore();
-        removeSecondCardIdentifiersFromLocalStorage();
+        alertWhenTheSameCardIsClicked();
       }
     } else {
-      const pleaseWaitMessage = 'Please wait before selecting another card.';
-      alert(pleaseWaitMessage);
-      decrementCurrentScore();
+      alertWhenMoreThanOneCardIsClicked();
     }
   }
 }
@@ -180,53 +232,71 @@ function countCardsRemaining() {
     flipCard(event);
 
     setTimeout(() => {
-      const gameOverMessage = 'Game Over. Please play again.';
-      alert(gameOverMessage);
+      alertWhenGameIsOver();
     }, 500);
   } else {
-    incrementCurrentScore();
+    increaseCurrentScore();
     flipCard(event);
   }
 }
 
-function setUpCurrentScoreInLocalStorage() {
+function resetCurrentScoreToZeroInLocalStorage() {
   const currentScoreNumDiv = document.getElementById('currentScoreNum');
   currentScoreNumDiv.innerHTML = 0;
   localStorage.setItem('gameScore', 0);
 }
 
+function setBestScoreToZeroIfNoBestScoreInLocalStorage(
+  bestScoreInLocalStorage
+) {
+  bestScoreInLocalStorage = 0;
+  localStorage.setItem('bestScore', bestScoreInLocalStorage);
+  return bestScoreInLocalStorage;
+}
+
 function loadBestScoreFromLocalStorage() {
   let bestScoreInLocalStorage = localStorage.getItem('bestScore');
   if (!bestScoreInLocalStorage) {
-    bestScoreInLocalStorage = 0;
-    localStorage.setItem('bestScore', bestScoreInLocalStorage);
+    bestScoreInLocalStorage = setBestScoreToZeroIfNoBestScoreInLocalStorage(
+      bestScoreInLocalStorage
+    );
   }
 
   const bestScoreNumDiv = document.getElementById('bestScoreNum');
   bestScoreNumDiv.innerHTML = bestScoreInLocalStorage;
-}
-/*
-function restartGame() {
-  const restartButton = document.getElementById('restartButton');
-  restartButton.addEventListener('click', createCardsWith);
+
+  //TODO: further development - best score
+  //store/load best score by pair numbers selected
+  //i.e. if you select 2 pairs and get best score of 4,
+  //best score will always be 4 unless removed from
+  //local storage
 }
 
-function startGame() {
-  const startButton = document.getElementById('startButton');
-  startButton.addEventListener('click', createCardsWith);
+function startGame(event) {
+  loadPage();
+
+  const game = document.getElementById('game');
+  game.innerHTML = '';
+
+  const pairInput = document.getElementById('pairInput');
+  const numOfPairsColorsNeeded = pairInput.valueAsNumber;
+  //TODO: further development - pair input
+  //verification to ensure too large of number or negative
+  //number doesn't crash site
+
+  const shuffledRandomColorArray = shuffleRandomColorArrayWith(
+    numOfPairsColorsNeeded
+  );
+
+  createCardsWithColorsFrom(shuffledRandomColorArray);
 }
-*/
+
 function loadPage() {
-  const randomColors = shuffledRandomColors();
-  createCardsWith(randomColors);
-  //startGame();
-  //restartGame();
-  setUpCurrentScoreInLocalStorage();
+  resetCurrentScoreToZeroInLocalStorage();
   loadBestScoreFromLocalStorage();
-  removeFirstCardIdentifiersFromLocalStorage();
-  removeSecondCardIdentifiersFromLocalStorage();
-}
+  remove1stCardIdenFromLocalStorage();
+  remove2ndCardIdenFromLocalStorage();
 
-/*
-if card doesn't equal card, remove class otherwise keep class and don't allow second click
-*/
+  const startButton = document.getElementById('startButton');
+  startButton.addEventListener('click', startGame);
+}
