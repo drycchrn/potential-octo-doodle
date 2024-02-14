@@ -38,27 +38,48 @@ function update() {
   updateMonthly(values);
 }
 
+function invalidInputAlert(inputField) {
+  const message = 'Please check ' + inputField + ' and try again.';
+  alert(message);
+}
+
 function calculateMonthlyPaymentBasedOn(values) {
   const principleAmount = values.amount;
-  const monthlyInterestRate = values.rate / (100 * 12); //rate input was for yearly
+  //calculate monthly interest rate from yearly rate input
+  const monthlyInterestRate = values.rate / (100 * 12);
   const numOfMonthlyPayments = values.years * 12;
   let calculatedMonthlyPayment = 0;
+  let formattedMonthlyPaymentString = '$0.00';
+  let inputField = '';
 
-  //monthly payment formula
-  calculatedMonthlyPayment =
-    (principleAmount * monthlyInterestRate) /
-    (1 - Math.pow(1 + monthlyInterestRate, -numOfMonthlyPayments));
+  //if inputs are negative numbers, alert specifying field
+  //else calculate then format monthly payment
+  if (principleAmount < 0) {
+    inputField = 'loan amount';
+    invalidInputAlert(inputField);
+  } else if (monthlyInterestRate < 0) {
+    inputField = 'yearly rate';
+    invalidInputAlert(inputField);
+  } else if (numOfMonthlyPayments < 0) {
+    inputField = 'term in years';
+    invalidInputAlert(inputField);
+  } else {
+    //calculate monthly payment
+    calculatedMonthlyPayment =
+      (principleAmount * monthlyInterestRate) /
+      (1 - Math.pow(1 + monthlyInterestRate, -numOfMonthlyPayments));
 
-  //format monthly payment as string in USD
-  const formatting = {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  };
-  const monthlyPayment = new Intl.NumberFormat('en-US', formatting);
-  const formattedMonthlyPaymentString = monthlyPayment.format(
-    calculatedMonthlyPayment
-  );
+    //format monthly payment as string in USD
+    const formatting = {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    };
+    const monthlyPayment = new Intl.NumberFormat('en-US', formatting);
+    formattedMonthlyPaymentString = monthlyPayment.format(
+      calculatedMonthlyPayment
+    );
+  }
 
   return formattedMonthlyPaymentString;
 }

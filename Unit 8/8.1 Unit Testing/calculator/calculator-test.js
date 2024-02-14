@@ -24,3 +24,12 @@ it('should handle high interest rates', function () {
   };
   expect(calculateMonthlyPaymentBasedOn(values)).toEqual('$839.42');
 });
+
+it('should not return a negative payment amount', function () {
+  const values = {
+    amount: -100034,
+    years: 10,
+    rate: 21,
+  };
+  expect(calculateMonthlyPaymentBasedOn(values)).toEqual('$0.00');
+});
