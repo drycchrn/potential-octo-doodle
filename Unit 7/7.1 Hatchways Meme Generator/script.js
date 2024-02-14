@@ -3,20 +3,22 @@ function createEmptyDiv() {
   return emptyDivElement;
 }
 
-function deleteMemeFromLocalStorage(idNum) {
+function removeFromLocalStorageTheKeyValuePairOfMeme(idNum) {
   localStorage.removeItem(`memeInLocalStorage-${idNum}`);
 }
 
-function deleteMeme(event) {
+function deleteMemeFromPageAndRemoveFromLocalStorageOn(event) {
   const deleteButton = event.target.id;
   const numOfMemeBeingDeleted = Number(deleteButton.split('-')[1]);
-  const memeOnPage = document.getElementById(`meme-${numOfMemeBeingDeleted}`);
+  const memeDivOnPage = document.getElementById(
+    `meme-${numOfMemeBeingDeleted}`
+  );
 
-  memeOnPage.remove();
-  deleteMemeFromLocalStorage(numOfMemeBeingDeleted);
+  memeDivOnPage.remove();
+  removeFromLocalStorageTheKeyValuePairOfMeme(numOfMemeBeingDeleted);
 }
 
-function createDeleteButton(idNum) {
+function createDeleteButtonForMeme(idNum) {
   const newDeleteButton = document.createElement('button');
 
   newDeleteButton.setAttribute('type', 'submit');
@@ -24,7 +26,10 @@ function createDeleteButton(idNum) {
   newDeleteButton.setAttribute('id', `delete-${idNum}`);
   newDeleteButton.innerHTML = '🗑️';
   newDeleteButton.classList.add('deleteButton');
-  newDeleteButton.addEventListener('click', deleteMeme);
+  newDeleteButton.addEventListener(
+    'click',
+    deleteMemeFromPageAndRemoveFromLocalStorageOn
+  );
 
   return newDeleteButton;
 }
@@ -57,31 +62,39 @@ function createTopTextDivWith(topTextInput) {
   return topTextDiv;
 }
 
-function combineAllInputsIntoDiv(
-  idNum,
-  topTextInput,
-  imageUrlInput,
-  bottomTextInput
-) {
-  const memeAndButtonDiv = createEmptyDiv();
+function createMemeDivWith(topTextInput, imageUrlInput, bottomTextInput) {
   const memeDiv = createEmptyDiv();
-
   const topTextDiv = createTopTextDivWith(topTextInput);
   const imageDiv = createImageDivWith(imageUrlInput);
   const bottomTextDiv = createBottomTextDivWith(bottomTextInput);
-  const deleteButton = createDeleteButton(idNum);
 
   memeDiv.append(topTextDiv);
   memeDiv.append(imageDiv);
   memeDiv.append(bottomTextDiv);
   memeDiv.classList.add('memeChildDiv');
+  return memeDiv;
+}
 
-  memeAndButtonDiv.append(memeDiv);
-  memeAndButtonDiv.append(deleteButton);
-  memeAndButtonDiv.setAttribute('id', `meme-${idNum}`);
-  memeAndButtonDiv.classList.add('memeTextFormat');
+function createDivWithMemeAndDeleteButtonWith(
+  idNum,
+  topTextInput,
+  imageUrlInput,
+  bottomTextInput
+) {
+  const divForMemeAndDeleteButton = createEmptyDiv();
+  const memeImageAndTextDiv = createMemeDivWith(
+    topTextInput,
+    imageUrlInput,
+    bottomTextInput
+  );
+  const deleteButton = createDeleteButtonForMeme(idNum);
 
-  return memeAndButtonDiv;
+  divForMemeAndDeleteButton.append(memeImageAndTextDiv);
+  divForMemeAndDeleteButton.append(deleteButton);
+  divForMemeAndDeleteButton.setAttribute('id', `meme-${idNum}`);
+  divForMemeAndDeleteButton.classList.add('memeTextFormat');
+
+  return divForMemeAndDeleteButton;
 }
 
 function getUrlEndOf(imageUrlInput) {
@@ -142,7 +155,7 @@ function addMemeToPage(idNum, topText, imageUrl, bottomText) {
   const validateUrl = validateUrlEndingOf(imageUrl);
 
   if (validateUrl) {
-    const newMeme = combineAllInputsIntoDiv(
+    const newMeme = createDivWithMemeAndDeleteButtonWith(
       idNum,
       topText,
       imageUrl,
@@ -152,9 +165,9 @@ function addMemeToPage(idNum, topText, imageUrl, bottomText) {
     createdMemes.appendChild(newMeme);
     return true;
   } else {
-    const alertText =
+    const correctFormatMessage =
       'Please provide an image in jpg, jpeg, or png format and try again.';
-    alert(alertText);
+    alert(correctFormatMessage);
     return false;
   }
 }
@@ -173,7 +186,8 @@ function addMemeToLocalStorage(idNum, topText, imageUrl, bottomText) {
   );
 }
 
-function submitMeme() {
+function submitMeme(event) {
+  event.preventDefault();
   const topText = retrieveTopTextAndClearInput();
   const imageUrl = retrieveImageUrlAndClearInput();
   const bottomText = retrieveBottomTextAndClearInput();
@@ -190,6 +204,7 @@ function loadMemesFromLocalStorage() {
   const dataIds = Object.keys(loadMemes).sort(
     (a, b) => Number(a.split('-')[1]) - Number(b.split('-')[1])
   );
+  //sort to ensure memes stay in order after 9+ memes are on the page
 
   for (const dataId of dataIds) {
     const data = JSON.parse(loadMemes[dataId]);
