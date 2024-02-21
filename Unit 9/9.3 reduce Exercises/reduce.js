@@ -8,13 +8,11 @@ Examples:
 */
 
 function extractValue(arr, key) {
-  const nameToAddToArray = (accumulator, currentValue) => {
+  return arr.reduce((accumulator, currentValue) => {
     accumulator.push(currentValue[key]);
 
     return accumulator;
-  };
-
-  return arr.reduce(nameToAddToArray, []);
+  }, []);
 }
 
 /*
@@ -29,21 +27,23 @@ Examples:
 */
 
 function vowelCount(str) {
+  const vowels = 'aeiou';
   const splitString = str.split('');
-  const numOfVowelsInString = (accumulator, currentLetter) => {
-    const vowels = 'aeiou';
+
+  return splitString.reduce((accumulator, currentLetter) => {
     const lowercaseLetter = currentLetter.toLowerCase();
     const vowelInArray = vowels.indexOf(lowercaseLetter) !== -1;
     if (vowelInArray) {
-      accumulator[lowercaseLetter]++;
-    } else {
-      accumulator[lowercaseLetter] = 1;
+      if (accumulator[lowercaseLetter]) {
+        //if key is in object, increase the value
+        accumulator[lowercaseLetter]++;
+      } else {
+        //else set a key with value of 1
+        accumulator[lowercaseLetter] = 1;
+      }
     }
-
     return accumulator;
-  };
-
-  return splitString.reduce(numOfVowelsInString, {});
+  }, {});
 }
 
 /*
@@ -62,12 +62,10 @@ Examples:
 */
 
 function addKeyAndValue(arr, key, value) {
-  const funFunc = (accumulator, currentName, index) => {
+  return arr.reduce((accumulator, currentName, index) => {
     accumulator[index][key] = value;
     return accumulator;
-  };
-
-  return arr.reduce(funFunc, arr);
+  }, arr);
 }
 
 /*
@@ -78,20 +76,26 @@ Examples:
     function isEven(val){
         return val % 2 === 0;
     }
-
     const arr = [1,2,3,4,5,6,7,8];
-
     partition(arr, isEven) // [[2,4,6,8], [1,3,5,7]];
 
     function isLongerThanThreeCharacters(val){
         return val.length > 3;
     }
-
     const names = ['Elie', 'Colt', 'Tim', 'Matt'];
-
     partition(names, isLongerThanThreeCharacters) // [['Elie', 'Colt', 'Matt'], ['Tim']]
 */
 
 function partition(arr, callback) {
+  return arr.reduce((accumulator, currentName) => {
+    if (callback(currentName)) {
+      //if callback functions run on array name is true, push into the first array
+      accumulator[0].push(currentName);
+    } else {
+      //else push into second array
+      accumulator[1].push(currentName);
+    }
 
+    return accumulator;
+  }, [[], []]);
 }
