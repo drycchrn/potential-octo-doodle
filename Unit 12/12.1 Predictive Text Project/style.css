@@ -1,46 +1,83 @@
+/* 
+Why is this here?
+
 * {
-  /* box-sizing: border-box; */
+ box-sizing: border-box;
 }
 
 :focus {
- /* TODO */
+  TODO
 }
+ */
 
 body {
-  /* TODO */
+  background-image: linear-gradient(
+    to right,
+    rgba(245, 202, 30, 255),
+    rgba(224, 84, 0, 255)
+  );
 }
 
+/* 
+Why is this here?
 input {
- /* TODO */
+  TODO  
+}
+*/
+
+.search-container-wrapper {
+  top: 50vh;
+  position: relative;
+  display: grid;
+  gap: 0px;
 }
 
 .search-container {
- /* TODO */
+  align-self: center;
+  justify-self: center;
 }
+
 .search-container input,
 .search-container .suggestions {
-  /* TODO */
+  color: black;
+  opacity: 0.5;
 }
+
+/*
+Why is this here?
 .search-container input {
- /* TODO */
+  TODO
 }
+*/
+
 .search-container .suggestions {
-   /* TODO */
+  max-height: 30vh;
+  overflow-y: scroll;
+  scrollbar-color: orange transparent;
+  scrollbar-arrow-color: orange;
+  scrollbar-width: thin;
 }
 
 ul {
-  /* TODO */
-}
-ul.has-suggestions {
-  /* TODO */
-}
-ul li {
-  /* TODO */
-}
-ul li:hover {
-  /* TODO */
+  padding: 0px 0px;
+  margin: 0px 0px;
+  background-color: white;
 }
 
-input {
-   /* TODO */
+/* 
+Why is this here? 
+ul.has-suggestions {
+  TODO
+}
+*/
+
+ul li {
+  list-style-type: none;
+  text-align: left;
+}
+
+ul li:hover {
+  background-color: rgba(224, 84, 0, 255);
+  color: white;
+  font-weight: bold;
 }
