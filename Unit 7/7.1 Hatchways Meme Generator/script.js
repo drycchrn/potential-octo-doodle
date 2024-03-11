@@ -1,12 +1,8 @@
-function createEmptyDiv() {
-  const emptyDivElement = document.createElement('div');
-  return emptyDivElement;
-}
-
 function removeFromLocalStorageTheKeyValuePairOfMeme(idNum) {
   localStorage.removeItem(`memeInLocalStorage-${idNum}`);
 }
 
+//  delete button event listener function
 function deleteMemeFromPageAndRemoveFromLocalStorageOn(event) {
   const deleteButton = event.target.id;
   const numOfMemeBeingDeleted = Number(deleteButton.split('-')[1]);
@@ -14,10 +10,62 @@ function deleteMemeFromPageAndRemoveFromLocalStorageOn(event) {
     `meme-${numOfMemeBeingDeleted}`
   );
 
+  //  remove meme from page
   memeDivOnPage.remove();
+  //  remove from local storage
   removeFromLocalStorageTheKeyValuePairOfMeme(numOfMemeBeingDeleted);
 }
 
+//  create div element instead of repeating code
+function createEmptyDiv() {
+  const emptyDivElement = document.createElement('div');
+  return emptyDivElement;
+}
+
+//  create div elements containing inputs from top text, image, and bottom text
+function createTopTextDivWith(topTextInput) {
+  const topTextDiv = createEmptyDiv();
+
+  topTextDiv.innerHTML = topTextInput;
+  topTextDiv.classList.add('topTextPosition');
+
+  return topTextDiv;
+}
+
+function createImageDivWith(imageUrlInput) {
+  const imageDiv = createEmptyDiv();
+  const createImageElement = document.createElement('img');
+
+  createImageElement.setAttribute('src', imageUrlInput);
+  imageDiv.appendChild(createImageElement);
+
+  return imageDiv;
+}
+
+function createBottomTextDivWith(bottomTextInput) {
+  const bottomTextDiv = createEmptyDiv();
+
+  bottomTextDiv.innerHTML = bottomTextInput;
+  bottomTextDiv.classList.add('bottomTextPosition');
+
+  return bottomTextDiv;
+}
+
+//  put div elements with text and image inputs into one div
+function createMemeDivWith(topTextInput, imageUrlInput, bottomTextInput) {
+  const memeDiv = createEmptyDiv();
+  const topTextDiv = createTopTextDivWith(topTextInput);
+  const imageDiv = createImageDivWith(imageUrlInput);
+  const bottomTextDiv = createBottomTextDivWith(bottomTextInput);
+
+  memeDiv.append(topTextDiv);
+  memeDiv.append(imageDiv);
+  memeDiv.append(bottomTextDiv);
+  memeDiv.classList.add('memeChildDiv');
+  return memeDiv;
+}
+
+//  create a button element and attach event listener to delete
 function createDeleteButtonForMeme(idNum) {
   const newDeleteButton = document.createElement('button');
 
@@ -34,47 +82,7 @@ function createDeleteButtonForMeme(idNum) {
   return newDeleteButton;
 }
 
-function createBottomTextDivWith(bottomTextInput) {
-  const bottomTextDiv = createEmptyDiv();
-
-  bottomTextDiv.innerHTML = bottomTextInput;
-  bottomTextDiv.classList.add('bottomTextPosition');
-
-  return bottomTextDiv;
-}
-
-function createImageDivWith(imageUrlInput) {
-  const imageDiv = createEmptyDiv();
-  const createImageElement = document.createElement('img');
-
-  createImageElement.setAttribute('src', imageUrlInput);
-  imageDiv.appendChild(createImageElement);
-
-  return imageDiv;
-}
-
-function createTopTextDivWith(topTextInput) {
-  const topTextDiv = createEmptyDiv();
-
-  topTextDiv.innerHTML = topTextInput;
-  topTextDiv.classList.add('topTextPosition');
-
-  return topTextDiv;
-}
-
-function createMemeDivWith(topTextInput, imageUrlInput, bottomTextInput) {
-  const memeDiv = createEmptyDiv();
-  const topTextDiv = createTopTextDivWith(topTextInput);
-  const imageDiv = createImageDivWith(imageUrlInput);
-  const bottomTextDiv = createBottomTextDivWith(bottomTextInput);
-
-  memeDiv.append(topTextDiv);
-  memeDiv.append(imageDiv);
-  memeDiv.append(bottomTextDiv);
-  memeDiv.classList.add('memeChildDiv');
-  return memeDiv;
-}
-
+//  create div with meme and delete button
 function createDivWithMemeAndDeleteButtonWith(
   idNum,
   topTextInput,
@@ -97,6 +105,7 @@ function createDivWithMemeAndDeleteButtonWith(
   return divForMemeAndDeleteButton;
 }
 
+//  get and verify of image url
 function getUrlEndOf(imageUrlInput) {
   const endOfUrlInput = imageUrlInput.slice(-4);
   return endOfUrlInput;
@@ -115,6 +124,7 @@ function validateUrlEndingOf(imageUrlInput) {
   return false;
 }
 
+//  get input and clear page
 function retrieveTopTextAndClearInput() {
   const topText = document.getElementById('topTextInput').value;
   document.getElementById('topTextInput').value = '';
@@ -136,21 +146,7 @@ function retrieveBottomTextAndClearInput() {
   return bottomText;
 }
 
-function getNextIdNum() {
-  const loadLocalStorage = { ...localStorage };
-  const localStorageKeys = Object.keys(loadLocalStorage);
-  let highestNum = 0;
-
-  for (const key of localStorageKeys) {
-    const numOfKey = Number(key.split('-')[1]);
-    if (numOfKey > highestNum) {
-      highestNum = numOfKey;
-    }
-  }
-
-  return highestNum + 1;
-}
-
+//  add to page after validation is true
 function addMemeToPage(idNum, topText, imageUrl, bottomText) {
   const validateUrl = validateUrlEndingOf(imageUrl);
 
@@ -172,6 +168,7 @@ function addMemeToPage(idNum, topText, imageUrl, bottomText) {
   }
 }
 
+//  add to local storage
 function addMemeToLocalStorage(idNum, topText, imageUrl, bottomText) {
   const memeLocalStorageData = {
     id: idNum,
@@ -184,6 +181,22 @@ function addMemeToLocalStorage(idNum, topText, imageUrl, bottomText) {
     `memeInLocalStorage-${idNum}`,
     JSON.stringify(memeLocalStorageData)
   );
+}
+
+//  get next num to track meme order
+function getNextIdNum() {
+  const loadLocalStorage = { ...localStorage };
+  const localStorageKeys = Object.keys(loadLocalStorage);
+  let highestNum = 0;
+
+  for (const key of localStorageKeys) {
+    const numOfKey = Number(key.split('-')[1]);
+    if (numOfKey > highestNum) {
+      highestNum = numOfKey;
+    }
+  }
+
+  return highestNum + 1;
 }
 
 function submitMeme(event) {
@@ -201,10 +214,10 @@ function submitMeme(event) {
 
 function loadMemesFromLocalStorage() {
   const loadMemes = { ...localStorage };
+  //  keep memes in order after 9+ memes are on the page
   const dataIds = Object.keys(loadMemes).sort(
     (a, b) => Number(a.split('-')[1]) - Number(b.split('-')[1])
   );
-  //sort to ensure memes stay in order after 9+ memes are on the page
 
   for (const dataId of dataIds) {
     const data = JSON.parse(loadMemes[dataId]);
