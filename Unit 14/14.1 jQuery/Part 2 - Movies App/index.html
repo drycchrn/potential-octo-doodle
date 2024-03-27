@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Movies App</title>
+  </head>
+  <body>
+    <div id="submission-form">
+      <!--Further Study: Ensure that a title has at least 2 characters in it.-->
+      <input id="title" type="text" minlength="2" required />
+
+      <!--Further Study: Ensure that the rating of a movie can only be between 0 and 10.-->
+      <input id="rating" type="number" min="1" max="10" value="1" />
+      <button id="submit" type="submit">Submit</button>
+    </div>
+
+    <div id="movie-ratings">
+      <ul></ul>
+    </div>
+  </body>
+  <script src="script.js"></script>
+</html>
